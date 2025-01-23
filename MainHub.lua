@@ -124,15 +124,39 @@ for _, v in pairs(Plot.Objects:GetChildren()) do
         local Shelf = IdentifyObject(vv)
         if Shelf == "Shelf" then
             vv.SellableAmount.Changed:Connect(function(NewAmount)
-                local MaxStockOnShelf = GetMaxItemsOnShelfAmount(vv.Sellable.Value, vv.Name)
-                if MaxStockOnShelf >= 3 then
-                    if MaxStockOnShelf - NewAmount <3 then
-                        print("e")
-                    end
-                end
-                if MaxStockOnShelf <= 3 then
-
-                end
+                if Settings.General.AutoFillShelves then
+					local MaxStockOnShelf = GetMaxItemsOnShelfAmount(vv.Sellable.Value, vv.Name)
+					if MaxStockOnShelf ~= NewAmount then
+						local Highlight = Instance.new("Highlight")
+						local function CreateHighlight()
+							if Settings.ScriptSettings.MarkBusy then
+								Highlight.FillColor = Color3.fromRGB(0, 255, 0)
+								Highlight.FillTransparency = .75
+								Highlight.OutlineTransparency = .25
+								Highlight.Parent = vv
+							end
+						end
+						game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("RestockShelfFunction"):InvokeServer({vv})
+						print(vv.Name .. " - " .. vv.Sellable.Value .. " " .. NewAmount .. "/" .. MaxStockOnShelf)
+						if MaxStockOnShelf >= 3 then
+							if MaxStockOnShelf - NewAmount <3 then
+								CreateHighlight()
+								PurchaseStock(FindItemCategory(vv.Sellable.Value), MaxStockOnShelf - NewAmount, true)
+								task.wait(.35)
+								game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("RestockShelfFunction"):InvokeServer({vv})
+								task.wait(.5)
+							end
+						end
+						if MaxStockOnShelf <= 3 then
+							CreateHighlight()
+							PurchaseStock(FindItemCategory(vv.Sellable.Value), MaxStockOnShelf - NewAmount, true)
+							task.wait(.35)
+							game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("RestockShelfFunction"):InvokeServer({vv})
+							task.wait(.5)
+						end
+						Highlight:Destroy()
+					end
+				end
             end)
         end
     end
@@ -174,7 +198,6 @@ end
 						end
 						task.wait(.05)
 					end
-					print(vv.Name .. " - " .. vv.Sellable.Value .. " " .. StockOnShelf .. "/" .. MaxStockOnShelf)
 					-- Restock the shelf
 					game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("RestockShelfFunction"):InvokeServer({vv})
 					Highlight:Destroy()
