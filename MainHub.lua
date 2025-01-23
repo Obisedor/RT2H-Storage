@@ -119,7 +119,26 @@ local MarkBusy = MainTab:CreateToggle({
 
 -- MECHANICS
 
-while true do
+for _, v in pairs(Plot.Objects:GetChildren()) do
+    for __, vv in pairs(v:GetChildren()) do
+        local Shelf = IdentifyObject(vv)
+        if Shelf == "Shelf" then
+            vv.SellableAmount.Changed:Connect(function(NewAmount)
+                local MaxStockOnShelf = GetMaxItemsOnShelfAmount(vv.Sellable.Value, vv.Name)
+                if MaxStockOnShelf >= 3 then
+                    if MaxStockOnShelf - NewAmount <3 then
+                        print("e")
+                    end
+                end
+                if MaxStockOnShelf <= 3 then
+
+                end
+            end)
+        end
+    end
+end
+
+--[[ while true do
 
 	-- Auto fill shelves
 	if Settings.General.AutoFillShelves then
@@ -166,4 +185,4 @@ while true do
 	end
 	task.wait()
 
-end
+end ]]--
