@@ -6,7 +6,8 @@ local Humanoid = Char.Humanoid
 
 local Settings = {
 	General = {
-		AutoFillShelves = false
+		AutoFillShelves = false,
+		FullBright = false
 	},
 	ScriptSettings = {
 		MarkBusy = true
