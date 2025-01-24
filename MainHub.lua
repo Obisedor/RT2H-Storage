@@ -91,7 +91,7 @@ end
 
 local MainTab = Window:CreateTab("Main")
 
-local AutoFillShelvesNote = MainTab:CreateLabel("Auto refill & purchase shelf stock will automatically purchase stock and restock shelves with the stock, while also looking to performance.")
+local AutoFillShelvesNote = MainTab:CreateLabel("Auto refill & purchase shelf stock will automatically purchase stock and restock shelves with the stock, while also looking to performance. - Script's main feature")
 local AutoFillShelves = MainTab:CreateToggle({
 	Name = "Auto refill & purchase shelf stock",
 	CurrentValue = false,
