@@ -1,3 +1,5 @@
+local Plot = game.Workspace.Map.Plots["Plot_2"]
+
 local RP = game:GetService("ReplicatedStorage")
 local LP = game.Players.LocalPlayer
 local Char = LP.Character or LP.CharacterAdded:Wait()
@@ -83,6 +85,46 @@ local function PurchaseStock(Category, Amount, InstantDelivery)
 	game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("BuyStorage"):InvokeServer(unpack(args))
 end
 
+local function StockShelf(vv, NewAmount)
+	local MaxStockOnShelf = GetMaxItemsOnShelfAmount(vv.Sellable.Value, vv.Name)
+	if MaxStockOnShelf ~= NewAmount then
+		vv.Base.StockLabel.Enabled = true
+		local Highlight = Instance.new("Highlight")
+		local function CreateHighlight()
+			if Settings.ScriptSettings.MarkBusy then
+				Highlight.FillColor = Color3.fromRGB(0, 255, 0)
+				Highlight.FillTransparency = .75
+				Highlight.OutlineTransparency = .25
+				Highlight.Parent = vv
+			end
+		end
+		game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("RestockShelfFunction"):InvokeServer({vv})	
+		wait(.5)	
+		print(vv.Name .. " - " .. vv.Sellable.Value .. " " .. NewAmount .. "/" .. MaxStockOnShelf)
+		if MaxStockOnShelf <= 3 then
+				CreateHighlight()
+				game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("RestockShelfFunction"):InvokeServer({vv})												
+				task.wait(.35)
+				PurchaseStock(FindItemCategory(vv.Sellable.Value), MaxStockOnShelf - NewAmount, true)
+				task.wait(.35)
+				game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("RestockShelfFunction"):InvokeServer({vv})
+				task.wait(1)
+		end
+		local MissingStock = MaxStockOnShelf - NewAmount
+		if MaxStockOnShelf > 3 and MissingStock > 3 then
+			CreateHighlight()
+			game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("RestockShelfFunction"):InvokeServer({vv})												
+			task.wait(.35)
+			PurchaseStock(FindItemCategory(vv.Sellable.Value), MissingStock, true)
+			task.wait(.35)
+			game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("RestockShelfFunction"):InvokeServer({vv})
+			task.wait(1)
+		end
+		Highlight:Destroy()
+		vv.Base.StockLabel.Enabled = false
+	end
+end
+
 
 -- BUTTONS & TABS
 
@@ -119,44 +161,13 @@ local MarkBusy = MainTab:CreateToggle({
 
 
 -- MECHANICS
-
 for _, v in pairs(Plot.Objects:GetChildren()) do
-    for __, vv in pairs(v:GetChildren()) do
+    for _, vv in pairs(v:GetChildren()) do
         local Shelf = IdentifyObject(vv)
         if Shelf == "Shelf" then
             vv.SellableAmount.Changed:Connect(function(NewAmount)
                 if Settings.General.AutoFillShelves then
-					local MaxStockOnShelf = GetMaxItemsOnShelfAmount(vv.Sellable.Value, vv.Name)
-					if MaxStockOnShelf ~= NewAmount then
-						local Highlight = Instance.new("Highlight")
-						local function CreateHighlight()
-							if Settings.ScriptSettings.MarkBusy then
-								Highlight.FillColor = Color3.fromRGB(0, 255, 0)
-								Highlight.FillTransparency = .75
-								Highlight.OutlineTransparency = .25
-								Highlight.Parent = vv
-							end
-						end
-						game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("RestockShelfFunction"):InvokeServer({vv})
-						print(vv.Name .. " - " .. vv.Sellable.Value .. " " .. NewAmount .. "/" .. MaxStockOnShelf)
-						if MaxStockOnShelf >= 3 then
-							if MaxStockOnShelf - NewAmount <3 then
-								CreateHighlight()
-								PurchaseStock(FindItemCategory(vv.Sellable.Value), MaxStockOnShelf - NewAmount, true)
-								task.wait(.35)
-								game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("RestockShelfFunction"):InvokeServer({vv})
-								task.wait(.5)
-							end
-						end
-						if MaxStockOnShelf <= 3 then
-							CreateHighlight()
-							PurchaseStock(FindItemCategory(vv.Sellable.Value), MaxStockOnShelf - NewAmount, true)
-							task.wait(.35)
-							game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("RestockShelfFunction"):InvokeServer({vv})
-							task.wait(.5)
-						end
-						Highlight:Destroy()
-					end
+					StockShelf(vv, NewAmount)
 				end
             end)
         end
