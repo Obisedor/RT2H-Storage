@@ -20,7 +20,7 @@ local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
 	Name = "Retail Tycoon 2 Havoc (RT2H)",
-	Icon = 0, -- Icon in Topbar. Can use Lucide Icons (string) or Roblox Image (number). 0 to use no icon (default).
+	Icon = 0,
 	LoadingTitle = "Rayfield Interface Suite",
 	LoadingSubtitle = "by Sirius",
 	Theme = "Default",
@@ -100,7 +100,7 @@ local function StockShelf(vv, NewAmount)
 		end
 		game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("RestockShelfFunction"):InvokeServer({vv})	
 		wait(.5)	
-		print(vv.Name .. " - " .. vv.Sellable.Value .. " " .. NewAmount .. "/" .. MaxStockOnShelf)
+		print(vv.Name .. " - " .. vv.Sellable.Value .. " " .. NewAmount .. "/" .. MaxStockOnShelf) -- DEBUG
 		if MaxStockOnShelf <= 3 then
 				CreateHighlight()
 				game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("RestockShelfFunction"):InvokeServer({vv})												
@@ -149,7 +149,7 @@ MainTab:CreateDivider()
 
 local MainTab = Window:CreateTab("Main")
 
-local MarkBusy = MainTab:CreateLabel("'Mark busy actions' will for example mark shelves it is restocking with 'Auto Fill Shelves'.")
+local MarkBusy = MainTab:CreateLabel("'Mark busy actions' will for example mark shelves it is restocking with 'Auto Fill Shelves', so you have a good overview over what it is doing.")
 local MarkBusy = MainTab:CreateToggle({
 	Name = "Mark busy actions",
 	CurrentValue = true,
@@ -173,6 +173,11 @@ for _, v in pairs(Plot.Objects:GetChildren()) do
         end
     end
 end
+
+
+
+
+
 
 --[[ while true do
 
