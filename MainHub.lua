@@ -88,7 +88,7 @@ end
 local function StockShelf(vv, NewAmount)
 	local MaxStockOnShelf = GetMaxItemsOnShelfAmount(vv.Sellable.Value, vv.Name)
 	if MaxStockOnShelf ~= NewAmount then
-		vv.Base.StockLabel.Enabled = true
+        local StockLabelsEnabled = vv.Base.StockLabel.Enabled
 		local Highlight = Instance.new("Highlight")
 		local function CreateHighlight()
 			if Settings.ScriptSettings.MarkBusy then
@@ -121,7 +121,7 @@ local function StockShelf(vv, NewAmount)
 			task.wait(1)
 		end
 		Highlight:Destroy()
-		vv.Base.StockLabel.Enabled = false
+		if not StockLabelsEnabled then vv.Base.StockLabel.Enabled = false end
 	end
 end
 
@@ -173,56 +173,3 @@ for _, v in pairs(Plot.Objects:GetChildren()) do
         end
     end
 end
-
-
-
-
-
-
---[[ while true do
-
-	-- Auto fill shelves
-	if Settings.General.AutoFillShelves then
-		print("----------")
-		for i, v in pairs(game.Workspace.Map.Plots.Plot_3.Objects:GetChildren()) do
-			for ii, vv in pairs(v:GetChildren()) do
-				local Shelf = IdentifyObject(vv)
-				if Shelf == "Shelf" then
-					local Highlight = Instance.new("Highlight")
-					-- Restock the shelf just for if there still is shit in the storage
-					game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("RestockShelfFunction"):InvokeServer({vv})
-					-- Calculate how much items are on the shelf
-					local StockOnShelf = vv.SellableAmount.Value
-					local MaxStockOnShelf = GetMaxItemsOnShelfAmount(vv.Sellable.Value, vv.Name)
-					-- Purchase the stock needed
-					if MaxStockOnShelf <= 3 and MaxStockOnShelf - StockOnShelf <= 3 and StockOnShelf ~= MaxStockOnShelf then
-						PurchaseStock(FindItemCategory(vv.Sellable.Value), MaxStockOnShelf - StockOnShelf, true)
-						if Settings.ScriptSettings.MarkBusy then
-							Highlight.FillColor = Color3.fromRGB(0, 255, 0)
-							Highlight.FillTransparency = .75
-							Highlight.OutlineTransparency = .25
-							Highlight.Parent = vv
-						end
-						task.wait(.05)
-					end
-					if MaxStockOnShelf > 3 and MaxStockOnShelf - StockOnShelf >= 3 then
-						PurchaseStock(FindItemCategory(vv.Sellable.Value), MaxStockOnShelf - StockOnShelf, true)
-						if Settings.ScriptSettings.MarkBusy then
-							Highlight.FillColor = Color3.fromRGB(0, 255, 0)
-							Highlight.FillTransparency = .75
-							Highlight.OutlineTransparency = .25
-							Highlight.Parent = vv
-						end
-						task.wait(.05)
-					end
-					-- Restock the shelf
-					game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("RestockShelfFunction"):InvokeServer({vv})
-					Highlight:Destroy()
-				end
-			end
-		end
-		task.wait()
-	end
-	task.wait()
-
-end ]]--
