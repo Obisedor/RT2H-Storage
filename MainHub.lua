@@ -100,7 +100,7 @@ local function StockShelf(vv, NewAmount)
 		end
 		game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("RestockShelfFunction"):InvokeServer({vv})	
 		wait(.5)	
-		print(vv.Name .. " - " .. vv.Sellable.Value .. " " .. NewAmount .. "/" .. MaxStockOnShelf) -- DEBUG
+		--print(vv.Name .. " - " .. vv.Sellable.Value .. " " .. NewAmount .. "/" .. MaxStockOnShelf)
 		if MaxStockOnShelf <= 3 then
 				CreateHighlight()
 				game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("RestockShelfFunction"):InvokeServer({vv})												
