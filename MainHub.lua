@@ -77,12 +77,7 @@ local function IdentifyObject(Object)
 end
 
 local function PurchaseStock(Category, Amount, InstantDelivery)
-	local args = {
-		[1] = Category,
-		[2] = Amount,
-		[3] = InstantDelivery
-	}
-	game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("BuyStorage"):InvokeServer(unpack(args))
+	game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("BuyStorage"):InvokeServer(Category, Amount, InstantDelivery)
 end
 
 local function StockShelf(vv, NewAmount)
@@ -100,7 +95,7 @@ local function StockShelf(vv, NewAmount)
 		end
 		game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("RestockShelfFunction"):InvokeServer({vv})	
 		wait(.5)	
-		--print(vv.Name .. " - " .. vv.Sellable.Value .. " " .. NewAmount .. "/" .. MaxStockOnShelf)
+		print(vv.Name .. " - " .. vv.Sellable.Value .. " " .. NewAmount .. "/" .. MaxStockOnShelf)
 		if MaxStockOnShelf <= 3 then
 				CreateHighlight()
 				game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("RestockShelfFunction"):InvokeServer({vv})												
